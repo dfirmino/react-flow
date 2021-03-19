@@ -8837,7 +8837,6 @@ function getSmoothStepPath(_ref) {
   return "M ".concat(sourceX, ",").concat(sourceY).concat(firstCornerPath).concat(secondCornerPath, "L ").concat(targetX, ",").concat(targetY);
 }
 var padding = 50;
-var halfPadding = padding / 2;
 function getCustomStepPath(_ref2) {
   var sourceX = _ref2.sourceX,
       sourceY = _ref2.sourceY,
@@ -8875,15 +8874,12 @@ function getCustomStepPath(_ref2) {
   var sourceHPadding = "";
   var targetHPadding = "";
 
-  if (sourceX + padding <= targetX) {
+  if (sourceX <= targetX) {
     firstCornerPath = sourceY <= targetY ? bottomLeftCorner(sourceX, cY, cornerSize) : topLeftCorner(sourceX, cY, cornerSize);
     secondCornerPath = sourceY <= targetY ? rightTopCorner(targetX, cY, cornerSize) : rightBottomCorner(targetX, cY, cornerSize);
   } else {
-    // here is the case specifically where new corners need introduced
-    firstCornerPath = sourceY < targetY ? bottomRightCorner(sourceX, cY, cornerSize) : topRightCorner(sourceX + halfPadding, cY, cornerSize);
-    sourceHPadding = "".concat(sourceY <= targetY ? rightTopCorner(sourceX + halfPadding, sourceY, cornerSize) : rightBottomCorner(sourceX + halfPadding, sourceY, cornerSize));
-    secondCornerPath = sourceY < targetY ? leftTopCorner(targetX - halfPadding, cY, cornerSize) : leftBottomCorner(targetX - halfPadding, cY, cornerSize);
-    targetHPadding = "".concat(sourceY < targetY ? bottomLeftCorner(targetX - halfPadding, targetY, cornerSize) : topLeftCorner(targetX - halfPadding, targetY, cornerSize));
+    firstCornerPath = sourceY < targetY ? bottomRightCorner(sourceX, cY, cornerSize) : topRightCorner(sourceX, cY, cornerSize);
+    secondCornerPath = sourceY < targetY ? leftTopCorner(targetX, cY, cornerSize) : leftBottomCorner(targetX, cY, cornerSize);
   }
 
   if (leftAndRight.includes(sourcePosition) && leftAndRight.includes(targetPosition)) {

@@ -106,7 +106,7 @@ export function getSmoothStepPath({
 }
 
 const padding = 50;
-const halfPadding = padding/2;
+
 
 export function getCustomStepPath({
   sourceX,
@@ -133,20 +133,16 @@ export function getCustomStepPath({
   let sourceHPadding = "";
   let targetHPadding = "";
 
-  if (sourceX + padding <= targetX) {
+  if (sourceX <= targetX) {
     firstCornerPath =
       sourceY <= targetY ? bottomLeftCorner(sourceX, cY, cornerSize) : topLeftCorner(sourceX, cY, cornerSize);
     secondCornerPath =
       sourceY <= targetY ? rightTopCorner(targetX, cY, cornerSize) : rightBottomCorner(targetX, cY, cornerSize);
-  } else { // here is the case specifically where new corners need introduced
+  } else {
     firstCornerPath =
       sourceY < targetY ? bottomRightCorner(sourceX, cY, cornerSize) : topRightCorner(sourceX, cY, cornerSize);
-      sourceHPadding =
-      `${sourceY <= targetY ? rightTopCorner(sourceX + halfPadding, sourceY, cornerSize) : rightBottomCorner(sourceX, sourceY, cornerSize)}` ;
-      secondCornerPath =
-      sourceY < targetY ? leftTopCorner(targetX - halfPadding, cY, cornerSize) : leftBottomCorner(targetX - halfPadding, cY, cornerSize);
-      targetHPadding =
-      `${sourceY < targetY ? bottomLeftCorner(targetX - halfPadding, targetY, cornerSize) : topLeftCorner(targetX - halfPadding, targetY, cornerSize)}` ;
+    secondCornerPath =
+      sourceY < targetY ? leftTopCorner(targetX, cY, cornerSize) : leftBottomCorner(targetX, cY, cornerSize);
   }
 
   if (leftAndRight.includes(sourcePosition) && leftAndRight.includes(targetPosition)) {

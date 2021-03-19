@@ -8836,6 +8836,81 @@ function getSmoothStepPath(_ref) {
 
   return "M ".concat(sourceX, ",").concat(sourceY).concat(firstCornerPath).concat(secondCornerPath, "L ").concat(targetX, ",").concat(targetY);
 }
+var padding = 50;
+var halfPadding = padding / 2;
+function getCustomStepPath(_ref2) {
+  var sourceX = _ref2.sourceX,
+      sourceY = _ref2.sourceY,
+      _ref2$sourcePosition = _ref2.sourcePosition,
+      sourcePosition = _ref2$sourcePosition === void 0 ? Position.Bottom : _ref2$sourcePosition,
+      targetX = _ref2.targetX,
+      targetY = _ref2.targetY,
+      _ref2$targetPosition = _ref2.targetPosition,
+      targetPosition = _ref2$targetPosition === void 0 ? Position.Top : _ref2$targetPosition,
+      _ref2$borderRadius = _ref2.borderRadius,
+      borderRadius = _ref2$borderRadius === void 0 ? 5 : _ref2$borderRadius,
+      centerX = _ref2.centerX,
+      centerY = _ref2.centerY;
+
+  var _getCenter3 = getCenter({
+    sourceX: sourceX,
+    sourceY: sourceY,
+    targetX: targetX,
+    targetY: targetY
+  }),
+      _getCenter4 = _slicedToArray(_getCenter3, 4),
+      _centerX = _getCenter4[0],
+      _centerY = _getCenter4[1],
+      offsetX = _getCenter4[2],
+      offsetY = _getCenter4[3];
+
+  var cornerWidth = Math.min(borderRadius, Math.abs(targetX - sourceX));
+  var cornerHeight = Math.min(borderRadius, Math.abs(targetY - sourceY));
+  var cornerSize = Math.min(cornerWidth, cornerHeight, offsetX, offsetY);
+  var leftAndRight = [Position.Left, Position.Right];
+  var cX = typeof centerX !== 'undefined' ? centerX : _centerX;
+  var cY = typeof centerY !== 'undefined' ? centerY : _centerY;
+  var firstCornerPath = null;
+  var secondCornerPath = null;
+  var sourceHPadding = "";
+  var targetHPadding = "";
+
+  if (sourceX + padding <= targetX) {
+    firstCornerPath = sourceY <= targetY ? bottomLeftCorner(sourceX, cY, cornerSize) : topLeftCorner(sourceX, cY, cornerSize);
+    secondCornerPath = sourceY <= targetY ? rightTopCorner(targetX, cY, cornerSize) : rightBottomCorner(targetX, cY, cornerSize);
+  } else {
+    // here is the case specifically where new corners need introduced
+    firstCornerPath = sourceY < targetY ? bottomRightCorner(sourceX + halfPadding, cY, cornerSize) : topRightCorner(sourceX + halfPadding, cY, cornerSize);
+    sourceHPadding = "".concat(sourceY <= targetY ? rightTopCorner(sourceX + halfPadding, sourceY, cornerSize) : rightBottomCorner(sourceX + halfPadding, sourceY, cornerSize));
+    secondCornerPath = sourceY < targetY ? leftTopCorner(targetX - halfPadding, cY, cornerSize) : leftBottomCorner(targetX - halfPadding, cY, cornerSize);
+    targetHPadding = "".concat(sourceY < targetY ? bottomLeftCorner(targetX - halfPadding, targetY, cornerSize) : topLeftCorner(targetX - halfPadding, targetY, cornerSize));
+  }
+
+  if (leftAndRight.includes(sourcePosition) && leftAndRight.includes(targetPosition)) {
+    if (sourceX + padding <= targetX) {
+      firstCornerPath = sourceY <= targetY ? rightTopCorner(cX, sourceY, cornerSize) : rightBottomCorner(cX, sourceY, cornerSize);
+      secondCornerPath = sourceY <= targetY ? bottomLeftCorner(cX, targetY, cornerSize) : topLeftCorner(cX, targetY, cornerSize);
+    }
+  } else if (leftAndRight.includes(sourcePosition) && !leftAndRight.includes(targetPosition)) {
+    if (sourceX + padding <= targetX) {
+      firstCornerPath = sourceY <= targetY ? rightTopCorner(targetX, sourceY, cornerSize) : rightBottomCorner(targetX, sourceY, cornerSize);
+    } else {
+      firstCornerPath = sourceY <= targetY ? bottomRightCorner(sourceX, targetY, cornerSize) : topRightCorner(sourceX, targetY, cornerSize);
+    }
+
+    secondCornerPath = '';
+  } else if (!leftAndRight.includes(sourcePosition) && leftAndRight.includes(targetPosition)) {
+    if (sourceX + padding <= targetX) {
+      firstCornerPath = sourceY <= targetY ? bottomLeftCorner(sourceX, targetY, cornerSize) : topLeftCorner(sourceX, targetY, cornerSize);
+    } else {
+      firstCornerPath = sourceY <= targetY ? bottomRightCorner(sourceX, targetY, cornerSize) : topRightCorner(sourceX, targetY, cornerSize);
+    }
+
+    secondCornerPath = '';
+  }
+
+  return "M ".concat(sourceX, ",").concat(sourceY).concat(sourceHPadding).concat(firstCornerPath).concat(secondCornerPath).concat(targetHPadding, "L ").concat(targetX, ",").concat(targetY);
+}
 var SmoothStepEdge = /*#__PURE__*/memo(function (_ref3) {
   var sourceX = _ref3.sourceX,
       sourceY = _ref3.sourceY,
@@ -11612,5 +11687,5 @@ var ReactFlowProvider = function ReactFlowProvider(_ref) {
 ReactFlowProvider.displayName = 'ReactFlowProvider';
 
 export default ReactFlow;
-export { ArrowHeadType, index as Background, BackgroundVariant, ConnectionLineType, ConnectionMode, index$1 as Controls, EdgeText$1 as EdgeText, Handle$1 as Handle, index$2 as MiniMap, PanOnScrollMode, Position, ReactFlowProvider, addEdge, getBezierPath, getConnectedEdges, getCenter as getEdgeCenter, getIncomers, getMarkerEnd, getOutgoers, getSmoothStepPath, getTransformForBounds, isEdge, isNode, removeElements, updateEdge, useDispatch, useStore, useStoreActions, useStoreState, useTypedSelector, useUpdateNodeInternals, useZoomPanHelper };
+export { ArrowHeadType, index as Background, BackgroundVariant, ConnectionLineType, ConnectionMode, index$1 as Controls, EdgeText$1 as EdgeText, Handle$1 as Handle, index$2 as MiniMap, PanOnScrollMode, Position, ReactFlowProvider, addEdge, getBezierPath, getConnectedEdges, getCustomStepPath, getCenter as getEdgeCenter, getIncomers, getMarkerEnd, getOutgoers, getSmoothStepPath, getTransformForBounds, isEdge, isNode, removeElements, updateEdge, useDispatch, useStore, useStoreActions, useStoreState, useTypedSelector, useUpdateNodeInternals, useZoomPanHelper };
 //# sourceMappingURL=ReactFlow.esm.js.map

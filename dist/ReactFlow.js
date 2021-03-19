@@ -8777,8 +8777,6 @@ var rightTopCorner = function rightTopCorner(x, y, size) {
   return "L ".concat(x - size, ",").concat(y, "Q ").concat(x, ",").concat(y, " ").concat(x, ",").concat(y + size);
 };
 
-var padding = 50;
-var halfPadding = padding / 2;
 function getSmoothStepPath(_ref) {
   var sourceX = _ref.sourceX,
       sourceY = _ref.sourceY,
@@ -8787,7 +8785,7 @@ function getSmoothStepPath(_ref) {
       targetX = _ref.targetX,
       targetY = _ref.targetY,
       _ref$targetPosition = _ref.targetPosition,
-      targetPosition = _ref$targetPosition === void 0 ? exports.Position.Left : _ref$targetPosition,
+      targetPosition = _ref$targetPosition === void 0 ? exports.Position.Top : _ref$targetPosition,
       _ref$borderRadius = _ref.borderRadius,
       borderRadius = _ref$borderRadius === void 0 ? 5 : _ref$borderRadius,
       centerX = _ref.centerX,
@@ -8811,30 +8809,24 @@ function getSmoothStepPath(_ref) {
   var leftAndRight = [exports.Position.Left, exports.Position.Right];
   var cX = typeof centerX !== 'undefined' ? centerX : _centerX;
   var cY = typeof centerY !== 'undefined' ? centerY : _centerY;
-  console.log('xablau');
   var firstCornerPath = null;
   var secondCornerPath = null;
-  var sourceHPadding = "";
-  var targetHPadding = "";
 
-  if (sourceX + padding <= targetX) {
+  if (sourceX <= targetX) {
     firstCornerPath = sourceY <= targetY ? bottomLeftCorner(sourceX, cY, cornerSize) : topLeftCorner(sourceX, cY, cornerSize);
     secondCornerPath = sourceY <= targetY ? rightTopCorner(targetX, cY, cornerSize) : rightBottomCorner(targetX, cY, cornerSize);
   } else {
-    // here is the case specifically where new corners need introduced
-    firstCornerPath = sourceY < targetY ? bottomRightCorner(sourceX + halfPadding, cY, cornerSize) : topRightCorner(sourceX + halfPadding, cY, cornerSize);
-    sourceHPadding = "".concat(sourceY <= targetY ? rightTopCorner(sourceX + halfPadding, sourceY, cornerSize) : rightBottomCorner(sourceX + halfPadding, sourceY, cornerSize));
-    secondCornerPath = sourceY < targetY ? leftTopCorner(targetX - halfPadding, cY, cornerSize) : leftBottomCorner(targetX - halfPadding, cY, cornerSize);
-    targetHPadding = "".concat(sourceY < targetY ? bottomLeftCorner(targetX - halfPadding, targetY, cornerSize) : topLeftCorner(targetX - halfPadding, targetY, cornerSize));
+    firstCornerPath = sourceY < targetY ? bottomRightCorner(sourceX, cY, cornerSize) : topRightCorner(sourceX, cY, cornerSize);
+    secondCornerPath = sourceY < targetY ? leftTopCorner(targetX, cY, cornerSize) : leftBottomCorner(targetX, cY, cornerSize);
   }
 
   if (leftAndRight.includes(sourcePosition) && leftAndRight.includes(targetPosition)) {
-    if (sourceX + padding <= targetX) {
+    if (sourceX <= targetX) {
       firstCornerPath = sourceY <= targetY ? rightTopCorner(cX, sourceY, cornerSize) : rightBottomCorner(cX, sourceY, cornerSize);
       secondCornerPath = sourceY <= targetY ? bottomLeftCorner(cX, targetY, cornerSize) : topLeftCorner(cX, targetY, cornerSize);
     }
   } else if (leftAndRight.includes(sourcePosition) && !leftAndRight.includes(targetPosition)) {
-    if (sourceX + padding <= targetX) {
+    if (sourceX <= targetX) {
       firstCornerPath = sourceY <= targetY ? rightTopCorner(targetX, sourceY, cornerSize) : rightBottomCorner(targetX, sourceY, cornerSize);
     } else {
       firstCornerPath = sourceY <= targetY ? bottomRightCorner(sourceX, targetY, cornerSize) : topRightCorner(sourceX, targetY, cornerSize);
@@ -8842,7 +8834,7 @@ function getSmoothStepPath(_ref) {
 
     secondCornerPath = '';
   } else if (!leftAndRight.includes(sourcePosition) && leftAndRight.includes(targetPosition)) {
-    if (sourceX + padding <= targetX) {
+    if (sourceX <= targetX) {
       firstCornerPath = sourceY <= targetY ? bottomLeftCorner(sourceX, targetY, cornerSize) : topLeftCorner(sourceX, targetY, cornerSize);
     } else {
       firstCornerPath = sourceY <= targetY ? bottomRightCorner(sourceX, targetY, cornerSize) : topRightCorner(sourceX, targetY, cornerSize);
@@ -8851,38 +8843,38 @@ function getSmoothStepPath(_ref) {
     secondCornerPath = '';
   }
 
-  return "M ".concat(sourceX, ",").concat(sourceY).concat(sourceHPadding).concat(firstCornerPath).concat(secondCornerPath).concat(targetHPadding, "L ").concat(targetX, ",").concat(targetY);
+  return "M ".concat(sourceX, ",").concat(sourceY).concat(firstCornerPath).concat(secondCornerPath, "L ").concat(targetX, ",").concat(targetY);
 }
-var SmoothStepEdge = /*#__PURE__*/React.memo(function (_ref2) {
-  var sourceX = _ref2.sourceX,
-      sourceY = _ref2.sourceY,
-      targetX = _ref2.targetX,
-      targetY = _ref2.targetY,
-      label = _ref2.label,
-      labelStyle = _ref2.labelStyle,
-      labelShowBg = _ref2.labelShowBg,
-      labelBgStyle = _ref2.labelBgStyle,
-      labelBgPadding = _ref2.labelBgPadding,
-      labelBgBorderRadius = _ref2.labelBgBorderRadius,
-      style = _ref2.style,
-      _ref2$sourcePosition = _ref2.sourcePosition,
-      sourcePosition = _ref2$sourcePosition === void 0 ? exports.Position.Bottom : _ref2$sourcePosition,
-      _ref2$targetPosition = _ref2.targetPosition,
-      targetPosition = _ref2$targetPosition === void 0 ? exports.Position.Top : _ref2$targetPosition,
-      arrowHeadType = _ref2.arrowHeadType,
-      markerEndId = _ref2.markerEndId,
-      _ref2$borderRadius = _ref2.borderRadius,
-      borderRadius = _ref2$borderRadius === void 0 ? 5 : _ref2$borderRadius;
+var SmoothStepEdge = /*#__PURE__*/React.memo(function (_ref3) {
+  var sourceX = _ref3.sourceX,
+      sourceY = _ref3.sourceY,
+      targetX = _ref3.targetX,
+      targetY = _ref3.targetY,
+      label = _ref3.label,
+      labelStyle = _ref3.labelStyle,
+      labelShowBg = _ref3.labelShowBg,
+      labelBgStyle = _ref3.labelBgStyle,
+      labelBgPadding = _ref3.labelBgPadding,
+      labelBgBorderRadius = _ref3.labelBgBorderRadius,
+      style = _ref3.style,
+      _ref3$sourcePosition = _ref3.sourcePosition,
+      sourcePosition = _ref3$sourcePosition === void 0 ? exports.Position.Bottom : _ref3$sourcePosition,
+      _ref3$targetPosition = _ref3.targetPosition,
+      targetPosition = _ref3$targetPosition === void 0 ? exports.Position.Top : _ref3$targetPosition,
+      arrowHeadType = _ref3.arrowHeadType,
+      markerEndId = _ref3.markerEndId,
+      _ref3$borderRadius = _ref3.borderRadius,
+      borderRadius = _ref3$borderRadius === void 0 ? 5 : _ref3$borderRadius;
 
-  var _getCenter3 = getCenter({
+  var _getCenter5 = getCenter({
     sourceX: sourceX,
     sourceY: sourceY,
     targetX: targetX,
     targetY: targetY
   }),
-      _getCenter4 = _slicedToArray(_getCenter3, 2),
-      centerX = _getCenter4[0],
-      centerY = _getCenter4[1];
+      _getCenter6 = _slicedToArray(_getCenter5, 2),
+      centerX = _getCenter6[0],
+      centerY = _getCenter6[1];
 
   var path = getSmoothStepPath({
     sourceX: sourceX,

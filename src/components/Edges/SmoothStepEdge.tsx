@@ -33,16 +33,13 @@ interface GetSmoothStepPathParams {
   centerY?: number;
 }
 
-const padding = 50;
-const halfPadding = padding/2;
-
 export function getSmoothStepPath({
   sourceX,
   sourceY,
   sourcePosition = Position.Bottom,
   targetX,
   targetY,
-  targetPosition = Position.Left,
+  targetPosition = Position.Top,
   borderRadius = 5,
   centerX,
   centerY,
@@ -54,7 +51,82 @@ export function getSmoothStepPath({
   const leftAndRight = [Position.Left, Position.Right];
   const cX = typeof centerX !== 'undefined' ? centerX : _centerX;
   const cY = typeof centerY !== 'undefined' ? centerY : _centerY;
-  console.log('xablau')
+
+  let firstCornerPath = null;
+  let secondCornerPath = null;
+
+  if (sourceX <= targetX) {
+    firstCornerPath =
+      sourceY <= targetY ? bottomLeftCorner(sourceX, cY, cornerSize) : topLeftCorner(sourceX, cY, cornerSize);
+    secondCornerPath =
+      sourceY <= targetY ? rightTopCorner(targetX, cY, cornerSize) : rightBottomCorner(targetX, cY, cornerSize);
+  } else {
+    firstCornerPath =
+      sourceY < targetY ? bottomRightCorner(sourceX, cY, cornerSize) : topRightCorner(sourceX, cY, cornerSize);
+    secondCornerPath =
+      sourceY < targetY ? leftTopCorner(targetX, cY, cornerSize) : leftBottomCorner(targetX, cY, cornerSize);
+  }
+
+  if (leftAndRight.includes(sourcePosition) && leftAndRight.includes(targetPosition)) {
+    if (sourceX <= targetX) {
+      firstCornerPath =
+        sourceY <= targetY ? rightTopCorner(cX, sourceY, cornerSize) : rightBottomCorner(cX, sourceY, cornerSize);
+      secondCornerPath =
+        sourceY <= targetY ? bottomLeftCorner(cX, targetY, cornerSize) : topLeftCorner(cX, targetY, cornerSize);
+    }
+  } else if (leftAndRight.includes(sourcePosition) && !leftAndRight.includes(targetPosition)) {
+    if (sourceX <= targetX) {
+      firstCornerPath =
+        sourceY <= targetY
+          ? rightTopCorner(targetX, sourceY, cornerSize)
+          : rightBottomCorner(targetX, sourceY, cornerSize);
+    } else {
+      firstCornerPath =
+        sourceY <= targetY
+          ? bottomRightCorner(sourceX, targetY, cornerSize)
+          : topRightCorner(sourceX, targetY, cornerSize);
+    }
+    secondCornerPath = '';
+  } else if (!leftAndRight.includes(sourcePosition) && leftAndRight.includes(targetPosition)) {
+    if (sourceX <= targetX) {
+      firstCornerPath =
+        sourceY <= targetY
+          ? bottomLeftCorner(sourceX, targetY, cornerSize)
+          : topLeftCorner(sourceX, targetY, cornerSize);
+    } else {
+      firstCornerPath =
+        sourceY <= targetY
+          ? bottomRightCorner(sourceX, targetY, cornerSize)
+          : topRightCorner(sourceX, targetY, cornerSize);
+    }
+    secondCornerPath = '';
+  }
+
+  return `M ${sourceX},${sourceY}${firstCornerPath}${secondCornerPath}L ${targetX},${targetY}`;
+}
+
+const padding = 50;
+const halfPadding = padding/2;
+
+export function getCustomStepPath({
+  sourceX,
+  sourceY,
+  sourcePosition = Position.Bottom,
+  targetX,
+  targetY,
+  targetPosition = Position.Top,
+  borderRadius = 5,
+  centerX,
+  centerY,
+}: GetSmoothStepPathParams): string {
+  const [_centerX, _centerY, offsetX, offsetY] = getCenter({ sourceX, sourceY, targetX, targetY });
+  const cornerWidth = Math.min(borderRadius, Math.abs(targetX - sourceX));
+  const cornerHeight = Math.min(borderRadius, Math.abs(targetY - sourceY));
+  const cornerSize = Math.min(cornerWidth, cornerHeight, offsetX, offsetY);
+  const leftAndRight = [Position.Left, Position.Right];
+  const cX = typeof centerX !== 'undefined' ? centerX : _centerX;
+  const cY = typeof centerY !== 'undefined' ? centerY : _centerY;
+
   let firstCornerPath = null;
   let secondCornerPath = null;
 

@@ -12,5 +12,6 @@ interface GetSmoothStepPathParams {
     centerY?: number;
 }
 export declare function getSmoothStepPath({ sourceX, sourceY, sourcePosition, targetX, targetY, targetPosition, borderRadius, centerX, centerY, }: GetSmoothStepPathParams): string;
+export declare function getCustomStepPath({ sourceX, sourceY, sourcePosition, targetX, targetY, targetPosition, borderRadius, centerX, centerY, }: GetSmoothStepPathParams): string;
 declare const _default: React.MemoExoticComponent<({ sourceX, sourceY, targetX, targetY, label, labelStyle, labelShowBg, labelBgStyle, labelBgPadding, labelBgBorderRadius, style, sourcePosition, targetPosition, arrowHeadType, markerEndId, borderRadius, }: EdgeSmoothStepProps) => JSX.Element>;
 export default _default;

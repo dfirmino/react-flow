@@ -8889,10 +8889,10 @@ function getCustomStepPath(_ref2) {
     secondCornerPath = sourceY <= targetY ? rightTopCorner(targetX, cY, cornerSize) : rightBottomCorner(targetX, cY, cornerSize);
   } else {
     // here is the case specifically where new corners need introduced
-    firstCornerPath = sourceY < targetY ? bottomRightCorner(sourceX, cY, cornerSize) : topRightCorner(sourceX, cY, cornerSize);
-    sourceHPadding = "".concat(sourceY <= targetY ? rightTopCorner(sourceX, sourceY, cornerSize) : rightBottomCorner(sourceX, sourceY, cornerSize));
-    secondCornerPath = sourceY < targetY ? leftTopCorner(targetX, cY, cornerSize) : leftBottomCorner(targetX - halfPadding, cY, cornerSize);
-    targetHPadding = "".concat(sourceY < targetY ? bottomLeftCorner(targetX, targetY, cornerSize) : topLeftCorner(targetX - halfPadding, targetY, cornerSize));
+    firstCornerPath = sourceY < targetY ? bottomRightCorner(sourceX + halfPadding, cY, cornerSize) : topRightCorner(sourceX, cY, cornerSize);
+    sourceHPadding = "".concat(sourceY <= targetY ? rightTopCorner(sourceX + halfPadding, sourceY, cornerSize) : rightBottomCorner(sourceX, sourceY, cornerSize));
+    secondCornerPath = sourceY < targetY ? leftTopCorner(targetX - halfPadding, cY, cornerSize) : leftBottomCorner(targetX - halfPadding, cY, cornerSize);
+    targetHPadding = "".concat(sourceY < targetY ? bottomLeftCorner(targetX - halfPadding, targetY, cornerSize) : topLeftCorner(targetX - halfPadding, targetY, cornerSize));
   }
 
   if (leftAndRight.includes(sourcePosition) && leftAndRight.includes(targetPosition)) {

@@ -140,13 +140,13 @@ export function getCustomStepPath({
       sourceY <= targetY ? rightTopCorner(targetX, cY, cornerSize) : rightBottomCorner(targetX, cY, cornerSize);
   } else { // here is the case specifically where new corners need introduced
     firstCornerPath =
-      sourceY < targetY ? bottomRightCorner(sourceX, cY, cornerSize) : topRightCorner(sourceX, cY, cornerSize);
+      sourceY < targetY ? bottomRightCorner(sourceX + halfPadding, cY, cornerSize) : topRightCorner(sourceX, cY, cornerSize);
       sourceHPadding =
-      `${sourceY <= targetY ? rightTopCorner(sourceX, sourceY, cornerSize) : rightBottomCorner(sourceX, sourceY, cornerSize)}` ;
+      `${sourceY <= targetY ? rightTopCorner(sourceX + halfPadding, sourceY, cornerSize) : rightBottomCorner(sourceX, sourceY, cornerSize)}` ;
       secondCornerPath =
-      sourceY < targetY ? leftTopCorner(targetX, cY, cornerSize) : leftBottomCorner(targetX - halfPadding, cY, cornerSize);
+      sourceY < targetY ? leftTopCorner(targetX - halfPadding, cY, cornerSize) : leftBottomCorner(targetX - halfPadding, cY, cornerSize);
       targetHPadding =
-      `${sourceY < targetY ? bottomLeftCorner(targetX, targetY, cornerSize) : topLeftCorner(targetX - halfPadding, targetY, cornerSize)}` ;
+      `${sourceY < targetY ? bottomLeftCorner(targetX - halfPadding, targetY, cornerSize) : topLeftCorner(targetX - halfPadding, targetY, cornerSize)}` ;
   }
 
   if (leftAndRight.includes(sourcePosition) && leftAndRight.includes(targetPosition)) {

@@ -140,7 +140,7 @@ export function getCustomStepPath({
       sourceY <= targetY ? rightTopCorner(targetX, cY, cornerSize) : rightBottomCorner(targetX, cY, cornerSize);
   } else { // here is the case specifically where new corners need introduced
     firstCornerPath =
-      sourceY < targetY ? bottomRightCorner(sourceX + halfPadding, cY, cornerSize) : topRightCorner(sourceX, cY, cornerSize);
+      sourceY < targetY ? bottomRightCorner(sourceX, cY, cornerSize) : topRightCorner(sourceX, cY, cornerSize);
       sourceHPadding =
       `${sourceY <= targetY ? rightTopCorner(sourceX + halfPadding, sourceY, cornerSize) : rightBottomCorner(sourceX, sourceY, cornerSize)}` ;
       secondCornerPath =

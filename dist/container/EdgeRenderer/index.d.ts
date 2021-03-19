@@ -11,11 +11,7 @@ interface EdgeRendererProps {
     markerEndId?: string;
     onlyRenderVisibleElements: boolean;
     onEdgeUpdate?: OnEdgeUpdateFunc;
-    onEdgeContextMenu?: (event: React.MouseEvent, edge: Edge) => void;
-    onEdgeMouseEnter?: (event: React.MouseEvent, edge: Edge) => void;
-    onEdgeMouseMove?: (event: React.MouseEvent, edge: Edge) => void;
-    onEdgeMouseLeave?: (event: React.MouseEvent, edge: Edge) => void;
-    edgeUpdaterRadius?: number;
+    onEdgeContextMenu?: (event: React.MouseEvent, element: Edge) => void;
 }
 interface EdgeWrapperProps {
     edge: Edge;

@@ -62,14 +62,10 @@ export interface ReactFlowProps extends Omit<HTMLAttributes<HTMLDivElement>, 'on
     panOnScrollMode?: PanOnScrollMode;
     zoomOnDoubleClick?: boolean;
     onEdgeUpdate?: OnEdgeUpdateFunc;
-    onEdgeContextMenu?: (event: MouseEvent, edge: Edge) => void;
-    onEdgeMouseEnter?: (event: MouseEvent, edge: Edge) => void;
-    onEdgeMouseMove?: (event: MouseEvent, edge: Edge) => void;
-    onEdgeMouseLeave?: (event: MouseEvent, edge: Edge) => void;
-    edgeUpdaterRadius?: number;
+    onEdgeContextMenu?: (event: MouseEvent, nodes: Edge) => void;
 }
 declare const ReactFlow: {
-    ({ elements, className, nodeTypes, edgeTypes, onElementClick, onLoad, onMove, onMoveStart, onMoveEnd, onElementsRemove, onConnect, onConnectStart, onConnectStop, onConnectEnd, onNodeMouseEnter, onNodeMouseMove, onNodeMouseLeave, onNodeContextMenu, onNodeDragStart, onNodeDrag, onNodeDragStop, onSelectionChange, onSelectionDragStart, onSelectionDrag, onSelectionDragStop, onSelectionContextMenu, connectionMode, connectionLineType, connectionLineStyle, connectionLineComponent, deleteKeyCode, selectionKeyCode, multiSelectionKeyCode, zoomActivationKeyCode, snapToGrid, snapGrid, onlyRenderVisibleElements, selectNodesOnDrag, nodesDraggable, nodesConnectable, elementsSelectable, minZoom, maxZoom, defaultZoom, defaultPosition, translateExtent, nodeExtent, arrowHeadColor, markerEndId, zoomOnScroll, zoomOnPinch, panOnScroll, panOnScrollSpeed, panOnScrollMode, zoomOnDoubleClick, paneMoveable, onPaneClick, onPaneScroll, onPaneContextMenu, children, onEdgeUpdate, onEdgeContextMenu, onEdgeMouseEnter, onEdgeMouseMove, onEdgeMouseLeave, edgeUpdaterRadius, ...rest }: ReactFlowProps): JSX.Element;
+    ({ elements, className, nodeTypes, edgeTypes, onElementClick, onLoad, onMove, onMoveStart, onMoveEnd, onElementsRemove, onConnect, onConnectStart, onConnectStop, onConnectEnd, onNodeMouseEnter, onNodeMouseMove, onNodeMouseLeave, onNodeContextMenu, onNodeDragStart, onNodeDrag, onNodeDragStop, onSelectionChange, onSelectionDragStart, onSelectionDrag, onSelectionDragStop, onSelectionContextMenu, connectionMode, connectionLineType, connectionLineStyle, connectionLineComponent, deleteKeyCode, selectionKeyCode, multiSelectionKeyCode, zoomActivationKeyCode, snapToGrid, snapGrid, onlyRenderVisibleElements, selectNodesOnDrag, nodesDraggable, nodesConnectable, elementsSelectable, minZoom, maxZoom, defaultZoom, defaultPosition, translateExtent, nodeExtent, arrowHeadColor, markerEndId, zoomOnScroll, zoomOnPinch, panOnScroll, panOnScrollSpeed, panOnScrollMode, zoomOnDoubleClick, paneMoveable, onPaneClick, onPaneScroll, onPaneContextMenu, children, onEdgeUpdate, onEdgeContextMenu, ...rest }: ReactFlowProps): JSX.Element;
     displayName: string;
 };
 export default ReactFlow;

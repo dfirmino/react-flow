@@ -109,11 +109,7 @@ export interface WrapEdgeProps<T = any> {
     isHidden?: boolean;
     handleEdgeUpdate: boolean;
     onConnectEdge: OnConnectFunc;
-    onContextMenu?: (event: React.MouseEvent, edge: Edge) => void;
-    onMouseEnter?: (event: React.MouseEvent, edge: Edge) => void;
-    onMouseMove?: (event: React.MouseEvent, edge: Edge) => void;
-    onMouseLeave?: (event: React.MouseEvent, edge: Edge) => void;
-    edgeUpdaterRadius?: number;
+    onContextMenu: (event: React.MouseEvent, edge: Edge) => void;
 }
 export interface EdgeProps<T = any> {
     id: ElementId;

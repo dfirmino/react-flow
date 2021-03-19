@@ -47,7 +47,7 @@ export function getSmoothStepPath({
   centerX,
   centerY,
 }: GetSmoothStepPathParams): string {
-  const [_centerX, _centerY, offsetX, offsetY] = getEdgeCenter({ sourceX, sourceY, targetX, targetY });
+  const [_centerX, _centerY, offsetX, offsetY] = getCenter({ sourceX, sourceY, targetX, targetY });
   const cornerWidth = Math.min(borderRadius, Math.abs(targetX - sourceX));
   const cornerHeight = Math.min(borderRadius, Math.abs(targetY - sourceY));
   const cornerSize = Math.min(cornerWidth, cornerHeight, offsetX, offsetY);

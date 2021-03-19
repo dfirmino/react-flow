@@ -6311,10 +6311,10 @@ var ZoomPane = function ZoomPane(_ref) {
 
         if (!zoomScroll && !panOnScroll && !pinchZoom && event.type === 'wheel') {
           return false;
-        } // if the pane is not movable, we prevent dragging it with mousestart or touchstart
+        } // if the pane is not movable, we prevent dragging it with the mouse
 
 
-        if (!paneMoveable && (event.type === 'mousedown' || event.type === 'touchstart')) {
+        if (!paneMoveable && event.type === 'mousedown') {
           return false;
         } // default filter for d3-zoom
 
@@ -8777,6 +8777,8 @@ var rightTopCorner = function rightTopCorner(x, y, size) {
   return "L ".concat(x - size, ",").concat(y, "Q ").concat(x, ",").concat(y, " ").concat(x, ",").concat(y + size);
 };
 
+var padding = 50;
+var halfPadding = padding / 2;
 function getSmoothStepPath(_ref) {
   var sourceX = _ref.sourceX,
       sourceY = _ref.sourceY,
@@ -8811,22 +8813,27 @@ function getSmoothStepPath(_ref) {
   var cY = typeof centerY !== 'undefined' ? centerY : _centerY;
   var firstCornerPath = null;
   var secondCornerPath = null;
+  var sourceHPadding = "";
+  var targetHPadding = "";
 
-  if (sourceX <= targetX) {
+  if (sourceX + padding <= targetX) {
     firstCornerPath = sourceY <= targetY ? bottomLeftCorner(sourceX, cY, cornerSize) : topLeftCorner(sourceX, cY, cornerSize);
     secondCornerPath = sourceY <= targetY ? rightTopCorner(targetX, cY, cornerSize) : rightBottomCorner(targetX, cY, cornerSize);
   } else {
-    firstCornerPath = sourceY < targetY ? bottomRightCorner(sourceX, cY, cornerSize) : topRightCorner(sourceX, cY, cornerSize);
-    secondCornerPath = sourceY < targetY ? leftTopCorner(targetX, cY, cornerSize) : leftBottomCorner(targetX, cY, cornerSize);
+    // here is the case specifically where new corners need introduced
+    firstCornerPath = sourceY < targetY ? bottomRightCorner(sourceX + halfPadding, cY, cornerSize) : topRightCorner(sourceX + halfPadding, cY, cornerSize);
+    sourceHPadding = "".concat(sourceY <= targetY ? rightTopCorner(sourceX + halfPadding, sourceY, cornerSize) : rightBottomCorner(sourceX + halfPadding, sourceY, cornerSize));
+    secondCornerPath = sourceY < targetY ? leftTopCorner(targetX - halfPadding, cY, cornerSize) : leftBottomCorner(targetX - halfPadding, cY, cornerSize);
+    targetHPadding = "".concat(sourceY < targetY ? bottomLeftCorner(targetX - halfPadding, targetY, cornerSize) : topLeftCorner(targetX - halfPadding, targetY, cornerSize));
   }
 
   if (leftAndRight.includes(sourcePosition) && leftAndRight.includes(targetPosition)) {
-    if (sourceX <= targetX) {
+    if (sourceX + padding <= targetX) {
       firstCornerPath = sourceY <= targetY ? rightTopCorner(cX, sourceY, cornerSize) : rightBottomCorner(cX, sourceY, cornerSize);
       secondCornerPath = sourceY <= targetY ? bottomLeftCorner(cX, targetY, cornerSize) : topLeftCorner(cX, targetY, cornerSize);
     }
   } else if (leftAndRight.includes(sourcePosition) && !leftAndRight.includes(targetPosition)) {
-    if (sourceX <= targetX) {
+    if (sourceX + padding <= targetX) {
       firstCornerPath = sourceY <= targetY ? rightTopCorner(targetX, sourceY, cornerSize) : rightBottomCorner(targetX, sourceY, cornerSize);
     } else {
       firstCornerPath = sourceY <= targetY ? bottomRightCorner(sourceX, targetY, cornerSize) : topRightCorner(sourceX, targetY, cornerSize);
@@ -8834,7 +8841,7 @@ function getSmoothStepPath(_ref) {
 
     secondCornerPath = '';
   } else if (!leftAndRight.includes(sourcePosition) && leftAndRight.includes(targetPosition)) {
-    if (sourceX <= targetX) {
+    if (sourceX + padding <= targetX) {
       firstCornerPath = sourceY <= targetY ? bottomLeftCorner(sourceX, targetY, cornerSize) : topLeftCorner(sourceX, targetY, cornerSize);
     } else {
       firstCornerPath = sourceY <= targetY ? bottomRightCorner(sourceX, targetY, cornerSize) : topRightCorner(sourceX, targetY, cornerSize);
@@ -8843,7 +8850,7 @@ function getSmoothStepPath(_ref) {
     secondCornerPath = '';
   }
 
-  return "M ".concat(sourceX, ",").concat(sourceY).concat(firstCornerPath).concat(secondCornerPath, "L ").concat(targetX, ",").concat(targetY);
+  return "M ".concat(sourceX, ",").concat(sourceY).concat(sourceHPadding).concat(firstCornerPath).concat(secondCornerPath).concat(targetHPadding, "L ").concat(targetX, ",").concat(targetY);
 }
 var SmoothStepEdge = /*#__PURE__*/React.memo(function (_ref2) {
   var sourceX = _ref2.sourceX,
@@ -9140,14 +9147,12 @@ function resetRecentHandle(hoveredHandle) {
 
 function onMouseDown(event, handleId, nodeId, setConnectionNodeId, setPosition, onConnect, isTarget, isValidConnection, connectionMode, onConnectStart, onConnectStop, onConnectEnd) {
   var reactFlowNode = event.target.closest('.react-flow');
-  var elementBelow = document.elementFromPoint(event.clientX, event.clientY);
-  var elementBelowIsTarget = (elementBelow === null || elementBelow === void 0 ? void 0 : elementBelow.classList.contains('target')) || false;
 
   if (!reactFlowNode) {
     return;
   }
 
-  var handleType = elementBelowIsTarget ? 'target' : 'source';
+  var handleType = isTarget ? 'target' : 'source';
   var containerBounds = reactFlowNode.getBoundingClientRect();
   var recentHoveredHandle;
   setPosition({
@@ -9229,14 +9234,15 @@ var shiftY = function shiftY(y, shift, position) {
 };
 
 var EdgeAnchor = function EdgeAnchor(_ref) {
-  var className = _ref.className,
+  var _ref$className = _ref.className,
+      className = _ref$className === void 0 ? "react-flow__edgeupdater" : _ref$className,
       position = _ref.position,
       centerX = _ref.centerX,
       centerY = _ref.centerY,
       _ref$radius = _ref.radius,
       radius = _ref$radius === void 0 ? 10 : _ref$radius;
   return /*#__PURE__*/React__default['default'].createElement("circle", {
-    className: cc(['react-flow__edgeupdater', className]),
+    className: className,
     cx: shiftX(centerX, radius, position),
     cy: shiftY(centerY, radius, position),
     r: radius,
@@ -9277,19 +9283,12 @@ var wrapEdge = (function (EdgeComponent) {
         targetHandleId = _ref.targetHandleId,
         handleEdgeUpdate = _ref.handleEdgeUpdate,
         onConnectEdge = _ref.onConnectEdge,
-        onContextMenu = _ref.onContextMenu,
-        onMouseEnter = _ref.onMouseEnter,
-        onMouseMove = _ref.onMouseMove,
-        onMouseLeave = _ref.onMouseLeave,
-        edgeUpdaterRadius = _ref.edgeUpdaterRadius;
+        onContextMenu = _ref.onContextMenu;
     var addSelectedElements = useStoreActions(function (actions) {
       return actions.addSelectedElements;
     });
     var setConnectionNodeId = useStoreActions(function (actions) {
       return actions.setConnectionNodeId;
-    });
-    var unsetNodesSelection = useStoreActions(function (actions) {
-      return actions.unsetNodesSelection;
     });
     var setPosition = useStoreActions(function (actions) {
       return actions.setConnectionPosition;
@@ -9334,7 +9333,6 @@ var wrapEdge = (function (EdgeComponent) {
     }, [id, source, target, type, sourceHandleId, targetHandleId, data]);
     var onEdgeClick = React.useCallback(function (event) {
       if (elementsSelectable) {
-        unsetNodesSelection();
         addSelectedElements(edgeElement);
       }
 
@@ -9342,15 +9340,6 @@ var wrapEdge = (function (EdgeComponent) {
     }, [elementsSelectable, edgeElement, onClick]);
     var onEdgeContextMenu = React.useCallback(function (event) {
       onContextMenu === null || onContextMenu === void 0 ? void 0 : onContextMenu(event, edgeElement);
-    }, [edgeElement, onContextMenu]);
-    var onEdgeMouseEnter = React.useCallback(function (event) {
-      onMouseEnter === null || onMouseEnter === void 0 ? void 0 : onMouseEnter(event, edgeElement);
-    }, [edgeElement, onContextMenu]);
-    var onEdgeMouseMove = React.useCallback(function (event) {
-      onMouseMove === null || onMouseMove === void 0 ? void 0 : onMouseMove(event, edgeElement);
-    }, [edgeElement, onContextMenu]);
-    var onEdgeMouseLeave = React.useCallback(function (event) {
-      onMouseLeave === null || onMouseLeave === void 0 ? void 0 : onMouseLeave(event, edgeElement);
     }, [edgeElement, onContextMenu]);
     var handleEdgeUpdater = React.useCallback(function (event, isSourceHandle) {
       var nodeId = isSourceHandle ? target : source;
@@ -9383,10 +9372,7 @@ var wrapEdge = (function (EdgeComponent) {
     return /*#__PURE__*/React__default['default'].createElement("g", {
       className: edgeClasses,
       onClick: onEdgeClick,
-      onContextMenu: onEdgeContextMenu,
-      onMouseEnter: onEdgeMouseEnter,
-      onMouseMove: onEdgeMouseMove,
-      onMouseLeave: onEdgeMouseLeave
+      onContextMenu: onEdgeContextMenu
     }, handleEdgeUpdate && /*#__PURE__*/React__default['default'].createElement("g", {
       onMouseDown: onEdgeUpdaterSourceMouseDown,
       onMouseEnter: onEdgeUpdaterMouseEnter,
@@ -9394,8 +9380,7 @@ var wrapEdge = (function (EdgeComponent) {
     }, /*#__PURE__*/React__default['default'].createElement(EdgeAnchor, {
       position: sourcePosition,
       centerX: sourceX,
-      centerY: sourceY,
-      radius: edgeUpdaterRadius
+      centerY: sourceY
     })), /*#__PURE__*/React__default['default'].createElement(EdgeComponent, {
       id: id,
       source: source,
@@ -9427,8 +9412,7 @@ var wrapEdge = (function (EdgeComponent) {
     }, /*#__PURE__*/React__default['default'].createElement(EdgeAnchor, {
       position: targetPosition,
       centerX: targetX,
-      centerY: targetY,
-      radius: edgeUpdaterRadius
+      centerY: targetY
     })));
   };
 
@@ -9684,11 +9668,7 @@ var Edge = function Edge(_ref) {
     isHidden: edge.isHidden,
     onConnectEdge: onConnectEdge,
     handleEdgeUpdate: typeof props.onEdgeUpdate !== 'undefined',
-    onContextMenu: props.onEdgeContextMenu,
-    onMouseEnter: props.onEdgeMouseEnter,
-    onMouseMove: props.onEdgeMouseMove,
-    onMouseLeave: props.onEdgeMouseLeave,
-    edgeUpdaterRadius: props.edgeUpdaterRadius
+    onContextMenu: props.onEdgeContextMenu
   });
 };
 
@@ -9957,12 +9937,8 @@ var GraphView = function GraphView(_ref) {
       onPaneScroll = _ref.onPaneScroll,
       onPaneContextMenu = _ref.onPaneContextMenu,
       onEdgeUpdate = _ref.onEdgeUpdate,
-      onEdgeContextMenu = _ref.onEdgeContextMenu,
-      onEdgeMouseEnter = _ref.onEdgeMouseEnter,
-      onEdgeMouseMove = _ref.onEdgeMouseMove,
-      onEdgeMouseLeave = _ref.onEdgeMouseLeave,
-      edgeUpdaterRadius = _ref.edgeUpdaterRadius;
-  var isInitialized = React.useRef(false);
+      onEdgeContextMenu = _ref.onEdgeContextMenu;
+  var isInitialised = React.useRef(false);
   var setOnConnect = useStoreActions(function (actions) {
     return actions.setOnConnect;
   });
@@ -10016,7 +9992,7 @@ var GraphView = function GraphView(_ref) {
       initialized = _useZoomPanHelper.initialized;
 
   React.useEffect(function () {
-    if (!isInitialized.current && initialized) {
+    if (!isInitialised.current && initialized) {
       if (onLoad) {
         onLoad({
           fitView: function fitView() {
@@ -10035,7 +10011,7 @@ var GraphView = function GraphView(_ref) {
         });
       }
 
-      isInitialized.current = true;
+      isInitialised.current = true;
     }
   }, [onLoad, zoomIn, zoomOut, zoomTo, transform, _fitView, initialized]);
   React.useEffect(function () {
@@ -10160,11 +10136,7 @@ var GraphView = function GraphView(_ref) {
     markerEndId: markerEndId,
     onEdgeUpdate: onEdgeUpdate,
     onlyRenderVisibleElements: onlyRenderVisibleElements,
-    onEdgeContextMenu: onEdgeContextMenu,
-    onEdgeMouseEnter: onEdgeMouseEnter,
-    onEdgeMouseMove: onEdgeMouseMove,
-    onEdgeMouseLeave: onEdgeMouseLeave,
-    edgeUpdaterRadius: edgeUpdaterRadius
+    onEdgeContextMenu: onEdgeContextMenu
   }));
 };
 
@@ -11053,7 +11025,7 @@ var initialState = {
   nodesConnectable: true,
   elementsSelectable: true,
   multiSelectionActive: false,
-  reactFlowVersion: "9.2.0" 
+  reactFlowVersion: "9.1.0" 
 };
 var store = configureStore(initialState);
 
@@ -11177,12 +11149,7 @@ var ReactFlow = function ReactFlow(_ref) {
       children = _ref.children,
       onEdgeUpdate = _ref.onEdgeUpdate,
       onEdgeContextMenu = _ref.onEdgeContextMenu,
-      onEdgeMouseEnter = _ref.onEdgeMouseEnter,
-      onEdgeMouseMove = _ref.onEdgeMouseMove,
-      onEdgeMouseLeave = _ref.onEdgeMouseLeave,
-      _ref$edgeUpdaterRadiu = _ref.edgeUpdaterRadius,
-      edgeUpdaterRadius = _ref$edgeUpdaterRadiu === void 0 ? 10 : _ref$edgeUpdaterRadiu,
-      rest = _objectWithoutProperties(_ref, ["elements", "className", "nodeTypes", "edgeTypes", "onElementClick", "onLoad", "onMove", "onMoveStart", "onMoveEnd", "onElementsRemove", "onConnect", "onConnectStart", "onConnectStop", "onConnectEnd", "onNodeMouseEnter", "onNodeMouseMove", "onNodeMouseLeave", "onNodeContextMenu", "onNodeDragStart", "onNodeDrag", "onNodeDragStop", "onSelectionChange", "onSelectionDragStart", "onSelectionDrag", "onSelectionDragStop", "onSelectionContextMenu", "connectionMode", "connectionLineType", "connectionLineStyle", "connectionLineComponent", "deleteKeyCode", "selectionKeyCode", "multiSelectionKeyCode", "zoomActivationKeyCode", "snapToGrid", "snapGrid", "onlyRenderVisibleElements", "selectNodesOnDrag", "nodesDraggable", "nodesConnectable", "elementsSelectable", "minZoom", "maxZoom", "defaultZoom", "defaultPosition", "translateExtent", "nodeExtent", "arrowHeadColor", "markerEndId", "zoomOnScroll", "zoomOnPinch", "panOnScroll", "panOnScrollSpeed", "panOnScrollMode", "zoomOnDoubleClick", "paneMoveable", "onPaneClick", "onPaneScroll", "onPaneContextMenu", "children", "onEdgeUpdate", "onEdgeContextMenu", "onEdgeMouseEnter", "onEdgeMouseMove", "onEdgeMouseLeave", "edgeUpdaterRadius"]);
+      rest = _objectWithoutProperties(_ref, ["elements", "className", "nodeTypes", "edgeTypes", "onElementClick", "onLoad", "onMove", "onMoveStart", "onMoveEnd", "onElementsRemove", "onConnect", "onConnectStart", "onConnectStop", "onConnectEnd", "onNodeMouseEnter", "onNodeMouseMove", "onNodeMouseLeave", "onNodeContextMenu", "onNodeDragStart", "onNodeDrag", "onNodeDragStop", "onSelectionChange", "onSelectionDragStart", "onSelectionDrag", "onSelectionDragStop", "onSelectionContextMenu", "connectionMode", "connectionLineType", "connectionLineStyle", "connectionLineComponent", "deleteKeyCode", "selectionKeyCode", "multiSelectionKeyCode", "zoomActivationKeyCode", "snapToGrid", "snapGrid", "onlyRenderVisibleElements", "selectNodesOnDrag", "nodesDraggable", "nodesConnectable", "elementsSelectable", "minZoom", "maxZoom", "defaultZoom", "defaultPosition", "translateExtent", "nodeExtent", "arrowHeadColor", "markerEndId", "zoomOnScroll", "zoomOnPinch", "panOnScroll", "panOnScrollSpeed", "panOnScrollMode", "zoomOnDoubleClick", "paneMoveable", "onPaneClick", "onPaneScroll", "onPaneContextMenu", "children", "onEdgeUpdate", "onEdgeContextMenu"]);
 
   var nodeTypesParsed = React.useMemo(function () {
     return createNodeTypes(nodeTypes);
@@ -11251,11 +11218,7 @@ var ReactFlow = function ReactFlow(_ref) {
     onSelectionDragStop: onSelectionDragStop,
     onSelectionContextMenu: onSelectionContextMenu,
     onEdgeUpdate: onEdgeUpdate,
-    onEdgeContextMenu: onEdgeContextMenu,
-    onEdgeMouseEnter: onEdgeMouseEnter,
-    onEdgeMouseMove: onEdgeMouseMove,
-    onEdgeMouseLeave: onEdgeMouseLeave,
-    edgeUpdaterRadius: edgeUpdaterRadius
+    onEdgeContextMenu: onEdgeContextMenu
   }), /*#__PURE__*/React__default['default'].createElement(ElementUpdater, {
     elements: elements
   }), onSelectionChange && /*#__PURE__*/React__default['default'].createElement(SelectionListener, {

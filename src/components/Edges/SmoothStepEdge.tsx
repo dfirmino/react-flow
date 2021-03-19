@@ -33,6 +33,9 @@ interface GetSmoothStepPathParams {
   centerY?: number;
 }
 
+const padding = 50;
+const halfPadding = padding/2;
+
 export function getSmoothStepPath({
   sourceX,
   sourceY,
@@ -44,7 +47,7 @@ export function getSmoothStepPath({
   centerX,
   centerY,
 }: GetSmoothStepPathParams): string {
-  const [_centerX, _centerY, offsetX, offsetY] = getCenter({ sourceX, sourceY, targetX, targetY });
+  const [_centerX, _centerY, offsetX, offsetY] = getEdgeCenter({ sourceX, sourceY, targetX, targetY });
   const cornerWidth = Math.min(borderRadius, Math.abs(targetX - sourceX));
   const cornerHeight = Math.min(borderRadius, Math.abs(targetY - sourceY));
   const cornerSize = Math.min(cornerWidth, cornerHeight, offsetX, offsetY);
@@ -55,27 +58,34 @@ export function getSmoothStepPath({
   let firstCornerPath = null;
   let secondCornerPath = null;
 
-  if (sourceX <= targetX) {
+  let sourceHPadding = "";
+  let targetHPadding = "";
+
+  if (sourceX + padding <= targetX) {
     firstCornerPath =
       sourceY <= targetY ? bottomLeftCorner(sourceX, cY, cornerSize) : topLeftCorner(sourceX, cY, cornerSize);
     secondCornerPath =
       sourceY <= targetY ? rightTopCorner(targetX, cY, cornerSize) : rightBottomCorner(targetX, cY, cornerSize);
-  } else {
+  } else { // here is the case specifically where new corners need introduced
     firstCornerPath =
-      sourceY < targetY ? bottomRightCorner(sourceX, cY, cornerSize) : topRightCorner(sourceX, cY, cornerSize);
-    secondCornerPath =
-      sourceY < targetY ? leftTopCorner(targetX, cY, cornerSize) : leftBottomCorner(targetX, cY, cornerSize);
+      sourceY < targetY ? bottomRightCorner(sourceX + halfPadding, cY, cornerSize) : topRightCorner(sourceX + halfPadding, cY, cornerSize);
+      sourceHPadding =
+      `${sourceY <= targetY ? rightTopCorner(sourceX + halfPadding, sourceY, cornerSize) : rightBottomCorner(sourceX + halfPadding, sourceY, cornerSize)}` ;
+      secondCornerPath =
+      sourceY < targetY ? leftTopCorner(targetX - halfPadding, cY, cornerSize) : leftBottomCorner(targetX - halfPadding, cY, cornerSize);
+      targetHPadding =
+      `${sourceY < targetY ? bottomLeftCorner(targetX - halfPadding, targetY, cornerSize) : topLeftCorner(targetX - halfPadding, targetY, cornerSize)}` ;
   }
 
   if (leftAndRight.includes(sourcePosition) && leftAndRight.includes(targetPosition)) {
-    if (sourceX <= targetX) {
+    if (sourceX + padding <= targetX) {
       firstCornerPath =
         sourceY <= targetY ? rightTopCorner(cX, sourceY, cornerSize) : rightBottomCorner(cX, sourceY, cornerSize);
       secondCornerPath =
         sourceY <= targetY ? bottomLeftCorner(cX, targetY, cornerSize) : topLeftCorner(cX, targetY, cornerSize);
     }
   } else if (leftAndRight.includes(sourcePosition) && !leftAndRight.includes(targetPosition)) {
-    if (sourceX <= targetX) {
+    if (sourceX + padding <= targetX) {
       firstCornerPath =
         sourceY <= targetY
           ? rightTopCorner(targetX, sourceY, cornerSize)
@@ -88,7 +98,7 @@ export function getSmoothStepPath({
     }
     secondCornerPath = '';
   } else if (!leftAndRight.includes(sourcePosition) && leftAndRight.includes(targetPosition)) {
-    if (sourceX <= targetX) {
+    if (sourceX + padding <= targetX) {
       firstCornerPath =
         sourceY <= targetY
           ? bottomLeftCorner(sourceX, targetY, cornerSize)
@@ -102,7 +112,7 @@ export function getSmoothStepPath({
     secondCornerPath = '';
   }
 
-  return `M ${sourceX},${sourceY}${firstCornerPath}${secondCornerPath}L ${targetX},${targetY}`;
+  return `M ${sourceX},${sourceY}${sourceHPadding}${firstCornerPath}${secondCornerPath}${targetHPadding}L ${targetX},${targetY}`;
 }
 
 export default memo(

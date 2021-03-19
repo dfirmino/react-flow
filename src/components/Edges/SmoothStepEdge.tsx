@@ -42,7 +42,7 @@ export function getSmoothStepPath({
   sourcePosition = Position.Bottom,
   targetX,
   targetY,
-  targetPosition = Position.Top,
+  targetPosition = Position.Left,
   borderRadius = 5,
   centerX,
   centerY,
@@ -54,7 +54,7 @@ export function getSmoothStepPath({
   const leftAndRight = [Position.Left, Position.Right];
   const cX = typeof centerX !== 'undefined' ? centerX : _centerX;
   const cY = typeof centerY !== 'undefined' ? centerY : _centerY;
-
+  console.log('xablau')
   let firstCornerPath = null;
   let secondCornerPath = null;
 

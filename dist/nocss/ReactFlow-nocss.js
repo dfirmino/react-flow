@@ -8787,7 +8787,7 @@ function getSmoothStepPath(_ref) {
       targetX = _ref.targetX,
       targetY = _ref.targetY,
       _ref$targetPosition = _ref.targetPosition,
-      targetPosition = _ref$targetPosition === void 0 ? exports.Position.Top : _ref$targetPosition,
+      targetPosition = _ref$targetPosition === void 0 ? exports.Position.Left : _ref$targetPosition,
       _ref$borderRadius = _ref.borderRadius,
       borderRadius = _ref$borderRadius === void 0 ? 5 : _ref$borderRadius,
       centerX = _ref.centerX,
@@ -8811,6 +8811,7 @@ function getSmoothStepPath(_ref) {
   var leftAndRight = [exports.Position.Left, exports.Position.Right];
   var cX = typeof centerX !== 'undefined' ? centerX : _centerX;
   var cY = typeof centerY !== 'undefined' ? centerY : _centerY;
+  console.log('xablau');
   var firstCornerPath = null;
   var secondCornerPath = null;
   var sourceHPadding = "";
